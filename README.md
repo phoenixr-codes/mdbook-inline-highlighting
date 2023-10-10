@@ -9,7 +9,7 @@ cargo install mdbook-inline-highlighting
 ## Usage
 
 ```toml
-[preprocessors.inline-highlighting]
+[preprocessor.inline-highlighting]
 
 default-language = "js"
 # Enforce JavaScript syntax highlighting when no language is specified. When this
