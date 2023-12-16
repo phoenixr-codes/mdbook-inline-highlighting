@@ -80,7 +80,7 @@ fn parse_inline_code(
             if ch == ESCAPE_CHAR {
                 result = chars.as_str().into();
             } else {
-                result = code.clone().into();
+                result = code.into();
             }
 
             return if let Some(l) = default_language {
@@ -104,9 +104,9 @@ fn parse_inline_code(
                     chapter
                 );
                 return if let Some(l) = default_language {
-                    (inline_with_highlighting(code.clone().into(), l), true)
+                    (inline_with_highlighting(code.into(), l), true)
                 } else {
-                    (code.clone().into(), false)
+                    (code.into(), false)
                 };
             }
         };
@@ -123,9 +123,9 @@ fn parse_inline_code(
             chapter
         );
         return if let Some(l) = default_language {
-            (inline_with_highlighting(code.clone().into(), l), true)
+            (inline_with_highlighting(code.into(), l), true)
         } else {
-            (code.clone().into(), false)
+            (code.into(), false)
         };
     };
     let actual_code = chars.as_str();
