@@ -1,5 +1,7 @@
 # mdbook-inline-highlighting
 
+![Preview](./preview.png)
+
 ## Installation
 
 ```console
