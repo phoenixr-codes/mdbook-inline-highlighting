@@ -51,7 +51,7 @@ impl Preprocessor for InlineHighlighterPreprocessor {
                 for event in parser {
                     events.push(if let Event::Code(code) = event {
                         let (c, is_html) =
-                            parse_inline_code(code.as_ref(), default_language.as_deref(), &chapter)
+                            parse_inline_code(code.as_ref(), default_language.as_deref(), chapter)
                                 .clone()
                                 .to_owned();
                         if is_html {
@@ -86,12 +86,11 @@ fn parse_inline_code(
     match chars.next() {
         Some(LANG_SPEC_START) => {}
         Some(ch) => {
-            let result: &str;
-            if ch == ESCAPE_CHAR {
-                result = chars.as_str().into();
+            let result: &str = if ch == ESCAPE_CHAR {
+                chars.as_str()
             } else {
-                result = code.into();
-            }
+                code
+            };
 
             return if let Some(l) = default_language {
                 (inline_with_highlighting(result, l), true)
@@ -114,26 +113,25 @@ fn parse_inline_code(
                     chapter
                 );
                 return if let Some(l) = default_language {
-                    (inline_with_highlighting(code.into(), l), true)
+                    (inline_with_highlighting(code, l), true)
                 } else {
                     (code.into(), false)
                 };
             }
         };
     }
-    let language: Option<&str>;
-    if lang == "none" {
-        language = default_language;
+    let language: Option<&str> = if lang == "none" {
+        default_language
     } else {
-        language = Some(&lang);
-    }
-    if !chars.next().is_some_and(|ch| ch == ' ') {
+        Some(&lang)
+    };
+    if chars.next().is_none_or(|ch| ch != ' ') {
         log::error!(
             "missing space after language identifier in chapter `{}`",
             chapter
         );
         return if let Some(l) = default_language {
-            (inline_with_highlighting(code.into(), l), true)
+            (inline_with_highlighting(code, l), true)
         } else {
             (code.into(), false)
         };

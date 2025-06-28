@@ -25,7 +25,7 @@ fn main() {
     env_logger::init();
 
     let matches = cmd().get_matches();
-    let preproc = preprocessor::InlineHighlighterPreprocessor::default();
+    let preproc = preprocessor::InlineHighlighterPreprocessor;
 
     if let Some(sub_args) = matches.subcommand_matches("supports") {
         handle_supports(&preproc, sub_args);
