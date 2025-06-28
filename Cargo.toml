@@ -1,6 +1,6 @@
 [package]
 name = "mdbook-inline-highlighting"
-version = "0.1.0"
+version = "1.0.0"
 authors = ["Jonas da Silva"]
 edition = "2021"
 description = "mdBook preprocessor that enables support for inline highlighting"
