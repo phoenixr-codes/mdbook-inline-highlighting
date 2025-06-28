@@ -5,6 +5,9 @@ multilingual = false
 src = "src"
 title = "mdbook-inline-highlighting"
 
+[output.html]
+smart-punctuation = false
+
 [preprocessor.inline-highlighting]
 after = ["links"]
 default-language = "javascript"

@@ -1,7 +1,9 @@
+use mdbook::utils::new_cmark_parser;
 use mdbook::BookItem;
 use mdbook::{book::Chapter, preprocess::Preprocessor};
-use pulldown_cmark::{Event, Parser};
+use pulldown_cmark::Event;
 use pulldown_cmark_to_cmark::cmark;
+use toml::Value;
 
 use crate::config::Configuration;
 
@@ -36,7 +38,15 @@ impl Preprocessor for InlineHighlighterPreprocessor {
                 let default_language = config.default_language;
                 let mut buf = String::new();
 
-                let parser = Parser::new(&chapter.content);
+                let html_options = ctx.config.get_renderer("html");
+                let smart_quotes = match html_options {
+                    Some(options) => match options.get("smart-punctuation") {
+                        Some(Value::Boolean(value)) => *value,
+                        _ => false,
+                    },
+                    None => false,
+                };
+                let parser = new_cmark_parser(&chapter.content, smart_quotes);
                 let mut events = vec![];
                 for event in parser {
                     events.push(if let Event::Code(code) = event {
