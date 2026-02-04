@@ -2,7 +2,7 @@
 
 ![Preview](./preview.png)
 
-Compatible with mdBook version` 0.5.*`.
+Compatible with mdBook version `0.5.*`.
 
 ## Installation
 
