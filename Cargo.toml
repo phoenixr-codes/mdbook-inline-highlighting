@@ -1,20 +1,19 @@
 [package]
 name = "mdbook-inline-highlighting"
-version = "1.0.0"
+version = "2.0.0"
 authors = ["Jonas da Silva"]
-edition = "2021"
+edition = "2024"
 description = "mdBook preprocessor that enables support for inline highlighting"
 repository = "https://github.com/phoenixr-codes/mdbook-inline-highlighting"
 license = "MIT"
 keywords = ["mdbook", "plugin", "preprocessor"]
 
 [dependencies]
-clap = { version = "4.4.6", features = ["cargo"] }
-env_logger = "0.10.0"
-log = "0.4.20"
-mdbook = "0.4.51"
-pulldown-cmark = { version = "0.10.0", default-features = false, features = ["html"] }
-pulldown-cmark-to-cmark = "14.0.1"
-semver = "1.0.20"
-serde_json = "1.0.107"
-toml = "0.5.11"
+clap = { version = "4.5.56", features = ["cargo"] }
+env_logger = "0.11.8"
+log = "0.4.29"
+mdbook-preprocessor = "0.5.2"
+pulldown-cmark = { version = "0.13.0", default-features = false, features = ["html"] }
+pulldown-cmark-to-cmark = "22.0.0"
+semver = "1.0.27"
+serde_json = "1.0.149"

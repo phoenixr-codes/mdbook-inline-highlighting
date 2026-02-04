@@ -1,9 +1,8 @@
-use mdbook::utils::new_cmark_parser;
-use mdbook::BookItem;
-use mdbook::{book::Chapter, preprocess::Preprocessor};
-use pulldown_cmark::Event;
+use mdbook_preprocessor::book::{Book, BookItem, Chapter};
+use mdbook_preprocessor::errors::Result;
+use mdbook_preprocessor::{Preprocessor, PreprocessorContext};
+use pulldown_cmark::{Event, Options, Parser};
 use pulldown_cmark_to_cmark::cmark;
-use toml::Value;
 
 use crate::config::Configuration;
 
@@ -19,41 +18,27 @@ impl Preprocessor for InlineHighlighterPreprocessor {
         "inline-highlighting"
     }
 
-    fn supports_renderer(&self, renderer: &str) -> bool {
-        renderer == "html"
-    }
+    fn run(&self, ctx: &PreprocessorContext, mut book: Book) -> Result<Book> {
+        let config = Configuration::from_mdbook_config(&ctx.config);
+        let default_language = config.default_language;
 
-    fn run(
-        &self,
-        ctx: &mdbook::preprocess::PreprocessorContext,
-        mut book: mdbook::book::Book,
-    ) -> mdbook::errors::Result<mdbook::book::Book> {
+        let smart_quotes = ctx
+            .config
+            .get::<bool>("output.html.smart-punctuation")
+            .ok()
+            .flatten()
+            .unwrap_or(false);
+
         book.for_each_mut(|item: &mut BookItem| {
             if let BookItem::Chapter(chapter) = item {
-                let config: Configuration = match ctx.config.get_preprocessor(self.name()) {
-                    Some(c) => c.try_into().unwrap(),
-                    None => Configuration::default(),
-                };
-
-                let default_language = config.default_language;
                 let mut buf = String::new();
 
-                let html_options = ctx.config.get_renderer("html");
-                let smart_quotes = match html_options {
-                    Some(options) => match options.get("smart-punctuation") {
-                        Some(Value::Boolean(value)) => *value,
-                        _ => false,
-                    },
-                    None => false,
-                };
                 let parser = new_cmark_parser(&chapter.content, smart_quotes);
                 let mut events = vec![];
                 for event in parser {
                     events.push(if let Event::Code(code) = event {
                         let (c, is_html) =
-                            parse_inline_code(code.as_ref(), default_language.as_deref(), chapter)
-                                .clone()
-                                .to_owned();
+                            parse_inline_code(code.as_ref(), default_language.as_deref(), chapter);
                         if is_html {
                             Event::Html(c.into())
                         } else {
@@ -73,10 +58,27 @@ impl Preprocessor for InlineHighlighterPreprocessor {
         });
         Ok(book)
     }
+
+    fn supports_renderer(&self, renderer: &str) -> Result<bool> {
+        Ok(renderer == "html")
+    }
 }
 
-/// Returns a tuple with the first item beeing the new content and the second item
-/// a boolean whether it is a HTML node.
+fn new_cmark_parser<'a>(text: &'a str, smart_punctuation: bool) -> Parser<'a> {
+    let mut options = Options::empty();
+    options.insert(Options::ENABLE_TABLES);
+    options.insert(Options::ENABLE_FOOTNOTES);
+    options.insert(Options::ENABLE_STRIKETHROUGH);
+    options.insert(Options::ENABLE_TASKLISTS);
+    options.insert(Options::ENABLE_HEADING_ATTRIBUTES);
+    if smart_punctuation {
+        options.insert(Options::ENABLE_SMART_PUNCTUATION);
+    }
+    Parser::new_ext(text, options)
+}
+
+/// Returns a tuple with the first item being the new content and the second item
+/// a boolean whether it is an HTML node.
 fn parse_inline_code(
     code: &str,
     default_language: Option<&str>,

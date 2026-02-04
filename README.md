@@ -2,6 +2,8 @@
 
 ![Preview](./preview.png)
 
+Compatible with mdBook version` 0.5.*`.
+
 ## Installation
 
 ```console
@@ -31,7 +33,7 @@ the same way. The equivalent would be `(x) => x % 2 == 0`.
 - `(x) => x % 2 == 0` uses the default `js` implicitly
 
 Note that each inline code must have the following syntax: `[LANGUAGE] TEXT`
-with the space beeing mendatory. Inline codes beginning with a backslash will
+with the space being mandatory. Inline codes beginning with a backslash will
 remove it and keep the rest as is so `\[py] if` would result in `[py] if`.
 
 This preprocessor always uses the same version of `highlight.js` that is used
